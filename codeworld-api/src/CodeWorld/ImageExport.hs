@@ -5,16 +5,16 @@ import Graphics.Blank (
   Canvas,
   DeviceContext,
   ImageData,
+  clearCanvas,
   getImageData,
   send,
   toDataURL,
-  with,
+  width,
+  height,
   )
 import CodeWorld.CanvasM (
-  newImage,
   runCanvasM,
   saveRestore,
-  withImage,
   )
 import CodeWorld.Driver                 (drawFrame, setupScreenContext)
 import CodeWorld.Picture                (Picture)
@@ -23,37 +23,31 @@ import Data.Text                        (Text)
 
 
 renderPictureDataURL
-  :: Int
-  -> Int
-  -> Picture
+  :: Picture
   -> DeviceContext
   -> IO Text
-renderPictureDataURL = renderPictureData $ toDataURL ()
+renderPictureDataURL = renderPictureData $ const $ const $ toDataURL ()
 
 
 renderPicturePixels
-  :: Int
-  -> Int
-  -> Picture
+  :: Picture
   -> DeviceContext
   -> IO ImageData
-renderPicturePixels w h = renderPictureData
-  (getImageData (0, 0, fromIntegral w, fromIntegral h))
-  w
-  h
+renderPicturePixels = renderPictureData
+  (\w h -> getImageData (0, 0, fromIntegral w, fromIntegral h))
 
 
 renderPictureData
-  :: Canvas a
-  -> Int
-  -> Int
+  :: (Int -> Int -> Canvas a)
   -> Picture
   -> DeviceContext
   -> IO a
-renderPictureData format w h p ctx = do
-  offscreen <- runCanvasM ctx $ newImage w h
-  runCanvasM ctx $ withImage offscreen $ saveRestore $ do
+renderPictureData format p ctx = do
+  send ctx clearCanvas
+  let w = width ctx
+      h = height ctx
+  runCanvasM ctx $ saveRestore $ do
     setupScreenContext w h
     drawFrame p
-  send ctx $ with offscreen format
+  send ctx $ format w h
 
