@@ -34,6 +34,7 @@ Library
                        CodeWorld.App,
                        CodeWorld.App2,
                        CodeWorld.Image,
+                       CodeWorld.ImageExport,
                        CodeWorld.Parameter,
                        CodeWorld.Reflex,
                        CodeWorld.Sketches
