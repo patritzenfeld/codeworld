@@ -167,7 +167,11 @@ data Picture
   | Pictures (Maybe SrcLoc) [Picture]
   | PictureAnd (Maybe SrcLoc) [Picture]
   | Blank (Maybe SrcLoc)
-  deriving (Generic)
+  deriving (Generic, Eq, Ord)
+
+-- nonsense, to ignore SrcLoc in the derived Ord instance above
+instance Ord SrcLoc where
+  _ <= _ = True
 
 instance NFData Picture
 
@@ -180,7 +184,7 @@ data TextStyle
     Bold
   | -- | Slanted script-like lettering used for emphasis
     Italic
-  deriving (Generic, Show)
+  deriving (Generic, Show, Eq, Ord)
 
 instance NFData TextStyle
 
@@ -197,7 +201,7 @@ data Font
   | Handwriting
   | Fancy
   | NamedFont !Text
-  deriving (Generic, Show)
+  deriving (Generic, Show, Eq, Ord)
 
 instance NFData Font
 
@@ -349,7 +353,8 @@ lettering :: HasCallStack => Text -> Picture
 lettering = Lettering (getDebugSrcLoc callStack)
 
 -- | A rendering of text characters onto a Picture, with a specific
--- choice of font and style.
+-- choice of font and style.eriving instance Ord Color
+--deriving instance Ord Picture
 styledLettering :: HasCallStack => TextStyle -> Font -> Text -> Picture
 styledLettering = StyledLettering (getDebugSrcLoc callStack)
 

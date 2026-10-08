@@ -29,7 +29,7 @@ data Color
       !Double
       !Double
       !Double
-  deriving (Generic, Show, Eq)
+  deriving (Generic, Show, Eq, Ord)
 
 instance NFData Color
 
